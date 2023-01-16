@@ -8,14 +8,17 @@ const {
   hashCompare,
   createToken,
   decodeToken,
+  validate,
+  roleAdmin,
 } = require("../common/auth");
 
 mongoose.connect(dbUrl);
 
-router.get("/all", async (req, res) => {
+router.get("/all", validate, roleAdmin, async (req, res) => {
   try {
+    // console.log(req.headers.authorization)
     let users = await userModel.find();
-    res.status(201).send({ data: users });
+    res.status(200).send({ data: users });
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Internal Server Error", error });
@@ -28,7 +31,7 @@ router.post("/signup", async (req, res) => {
     if (!user) {
       req.body.password = await hashPassword(req.body.password);
       let user = await userModel.create(req.body);
-      res.status(201).send({ message: "Registration Succesfull!" });
+      res.status(200).send({ message: "Registration Succesfull!" });
     } else {
       res
         .status(400)
@@ -50,8 +53,9 @@ router.post("/login", async (req, res) => {
           lastName: user.lastName,
           email: user.email,
           mobile: user.mobile,
+          role: user.role,
         });
-        decodeToken(token);
+        //  decodeToken(token);
         res.status(200).send({ message: "Login Succesfull!", token });
       } else {
         res.status(400).send({ message: `Invalid Credential` });

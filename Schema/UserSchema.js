@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema(
       validate: (value) => validator.isNumeric(value) && value.length === 10,
     },
     password: { type: String, required: true },
+    role: { type: String, default: "student" },
     createdAt: { type: Date, default: Date.now() },
   },
   {
